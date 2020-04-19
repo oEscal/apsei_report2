@@ -1,4 +1,64 @@
 \section{Protocolo}
+Toda a informação presente foi obtida da documentação do Signal \cite{signal}.
+
+\subsection{Primitivas}
+Sem contar com os algoritmos referidos em baixo que são uma grande parte do que torna Signal seguro este tambem usa as primitivas ,atualmente, mais seguras.
+
+\textbf{SHA-512} o que implica que existam , se o algoritmo \textit{random} for perfeito:
+\[Combinações=2^{bits}=2^{512}=1.340781^{154}\] 
+Isto implica que se alguém com um computador imaginemos a fazer $2^16$ cálculos em ~0.2s seria $327680$ por segundo:
+\[Time = 1.340781^{154} / 327680 = 4.091739^{148}s = 4.735809^{143} dias = 1.297482^{141} anos \] 
+Colocando isto em perspectiva a Terra tem $4,543\times10^9$ o que coloca a solução (para 1 computador) a demorar:
+\[Time = 1.297482^{141} /4,543*10^{9} = 1.5740434^{18} ~= 1500 \]
+O que significa que seriam necessários 1500 vezes o tempo que a terra existe para poder decifrar uma \textit{hash} efectuada com \textbf{\textit{SHA-512}}
+
+\textbf{Curve25519} é uma curva elíptica que garante 128 bits de segurança com \textit{elliptic curve Diffie-hellman key agreement}. Este foi construído de forma a evitar potenciais \textit{pitfalls} e para ser imune a \textit{time attacks} (ataques com base na analise do tempo gasto para executar algoritmos criptográficos) 
+
+\textbf{VXEdDSA} é um algoritmo de \textit{signing} que usa a hash \textit{SHA-5125}. Este funciona da seguinte forma,sendo \textbf{k} uma chave privada Montgomery,\textbf{M} uma mensagem a ser assinada,\textbf{Z} uma sequência de 64 bytes aleatórios e seguros,\textbf{u} a chave publica Montgomery,\textbf{V||h||s} a assinatura a verificar(sequência de bytes em que \textbf{V} faz \textit{encode} de um ponto e \textbf{h e s} fazem \textit{encode} do \textit{integer modulo q(prime number)}:
+
+\begin{center}
+\begin{tabular}{c}
+\begin{lstlisting}[language=Python,caption=Assinatura de um documento,captionpos=b]
+vxeddsa_sign(k, M, Z):
+    A, a = calculate_key_pair(k)
+    Bv = hash_to_point(A || M)
+    V = aBv
+    r = hash3(a || V || Z) (mod q)
+    R = rB
+    Rv = rBv
+    h = hash4(A || V || R || Rv || M) (mod q)
+    s = r + ha (mod q)
+    v = hash5(cV) (mod 2b)
+    return (V || h || s), v
+\end{lstlisting}
+\end{tabular}
+\end{center}
+
+
+\begin{center}
+\begin{tabular}{c}
+\begin{lstlisting}[language=Python,caption=Validação de assinatura de um documento,captionpos=b]
+vxeddsa_verify(u, M, (V || h || s)):
+    if u >= p or V.y >= 2|p| or h >= 2|q| or s >= 2|q|:
+        return false
+    A = convert_mont(u)
+    Bv = hash_to_point(A || M)
+    if not on_curve(A) or not on_curve(V):
+        return false
+    if cA == I or cV == I or Bv == I:
+        return false
+    R = sB - hA
+    Rv = sBv - hV
+    hcheck = hash4(A || V || R || Rv || M) (mod q)
+    if bytes_equal(h, hcheck):
+        v = hash5(cV) (mod 2b)
+        return v
+    return false
+\end{lstlisting}
+\end{tabular}
+\end{center}
+
+Entre outras primitivas com objectivos idênticos.
 
 \subsection{KDF chains}\label{sec:KDF}
 KDF Chains faz parte do \emph{core} de um dos principais métodos, \emph{Double Ratchet} (secção \ref{sec:DoubleRatchet}), necessários para manter o \textbf{Signal} seguro.
@@ -23,7 +83,7 @@ Uma \emph{KDF Chain} apresenta as seguintes propriedades:
     \item \textbf{Break-in recovery:} Se os inputs futuros adicionarem entropia suficiente , as chaves \textit{output} do futuro aparentam ser \emph{random} para um atacante que conheceu uma chave KDF num momento qualquer
 \end{itemize}
 
-Numa sessão que utilize \textbf{Double Ratchet} (secção \ref{sec:DoubleRatchet}), imaginemos entre a Alice e o Bob, cada utilizador guarda 3 chaves uma para cada KDF chain: \textbf{root chain}, \textbf{sending chain},\textbf{receiving chain}. A chave sending da Alice é equivalente à chave receiving do Bob.
+Numa sessão que utilize \textbf{Double Ratchet} (secção \ref{sec:DoubleRatchet}), imaginemos entre a Alice e o Bob, cada utilizador guarda 3 chaves uma para cada KDF chain: \textbf{root chain}, \textbf{sending chain},\textbf{receiving chain}. A chave \textit{sending} da Alice é equivalente à chave \textit{receiving} do Bob.
 
 Por cada mensagem enviada e/ou recebida a \emph{chain} "avança" e as suas chaves de \emph{output} São usadas para encriptar e desencriptar as mensagens a este processo dá-se o nome de \textbf{symmetric-key ratchet}.
 
@@ -57,7 +117,7 @@ A Alice é 'inicializada' com a \textit{ratchet key} publica do Bob. Desta forma
 \begin{figure}[H]
 \begin{center}
 \includegraphics[width=12cm]{img/DH1.png}
-\caption{}
+\caption{Mensagem enviada do Bob para a Alice}
 \label{diagram:DH1}
 \centering
 \end{center}
@@ -68,7 +128,7 @@ A primeira mensagem enviada pela Alice anuncia a sua \textit{ratchet key} public
 \begin{figure}[H]
 \begin{center}
 \includegraphics[width=12cm]{img/DH2.png}
-\caption{}
+\caption{Mensagem enviada da Alice para o Bob após a mensagem inicial }
 \label{diagram:DH2}
 \centering
 \end{center}
@@ -79,7 +139,7 @@ Uma nova mensagem vinda do Bob anuncia a sua nova \textit{ratchet key} publica. 
 \begin{figure}[H]
 \begin{center}
 \includegraphics[width=12cm]{img/DH3.png}
-\caption{}
+\caption{Nova mensagem do Bob com a Alice como destinatário}
 \label{diagram:DH3}
 \centering
 \end{center}
@@ -91,7 +151,7 @@ Uma mensagem nova por parte da Alice anuncia a sua nova chave publica. Eventualm
 \begin{center}
 \includegraphics[width=12cm]{img/DH4.png}
 \label{diagram:DH4}
-\caption{}
+\caption{Nova mensagem por parte da Alice}
 \centering
 \end{center}
 \end{figure}
@@ -101,7 +161,7 @@ Os \textit{DH output} que são gerados em cada passo de \textit{DH ratchet} São
 \begin{figure}[H]
 \begin{center}
 \includegraphics[width=12cm]{img/DH5.png}
-\caption{}
+\caption{Mensagem inicial por parte do Bob e resposta por parte da Alice , mostrando mais especificamente as cadeias de recepção e de envio}
 \label{diagram:DH5}
 \centering
 \end{center}
@@ -112,7 +172,7 @@ Sendo que os usuários efectuam \textit{"turnos"} a executar um passo do \textit
 \begin{figure}[H]
 \begin{center}
 \includegraphics[width=12cm]{img/DH6.png}
-\caption{}
+\caption{Nova mensagem por parte do Bob, mostrando as cadeias de receção e de envio}
 \label{diagram:DH6}
 \centering
 \end{center}
@@ -125,7 +185,7 @@ Desta forma ,um passo completo de uma \textit{DH Ratchet} consiste em atualizar 
 \begin{figure}[H]
 \begin{center}
 \includegraphics[width=12cm]{img/DH7.png}
-\caption{}
+\caption{Imagem que demonstra o processo por de trás da geração das cadeias mencionadas nas imagens \ref{diagram:DH5} e \ref{diagram:DH6}}
 \label{diagram:DH7}
 \centering
 \end{center}
@@ -143,23 +203,23 @@ A algoritmo de \textit{\textbf{Double Ratchet}} é a combinação de \textit{Sym
     \item Quando uma nova chave \textit{ratchet public} é recebida, um passo de \textit{DH ratchet} é efetuado antes da \textit{symmetric-key ratchet} para substituir as chaves da cadeia ( \textit{chain keys})
 \end{itemize}
 
-No diagrama em baixo,\ref{diagrama:DR1}, a Alice inicializou o processo com a chave \textit{ratchet public} e um segredo partilhado (equivalente à chave raiz inicial). Na inicialização a Alice gera um novo par de chaves \textit{ratchet} e envia o \textit{DH output} para a raiz do \textit{KDF} de forma a que sejam calculadas uma nova chave raiz e uma nova chave de envio.
+No diagrama \ref{diagram:DR1} ,em baixo, a Alice inicializou o processo com a chave \textit{ratchet public} e um segredo partilhado (equivalente à chave raiz inicial). Na inicialização a Alice gera um novo par de chaves \textit{ratchet} e envia o \textit{DH output} para a raiz do \textit{KDF} de forma a que sejam calculadas uma nova chave raiz e uma nova chave de envio.
 
 \begin{figure}[H]
 \begin{center}
 \includegraphics[width=12cm]{img/DR1.png}
-\caption{}
+\caption{Primeira mensagem por parte do Bob e inicializacao da chave raiz e chave de envio}
 \label{diagram:DR1}
 \centering
 \end{center}
 \end{figure}
 
-Quando a Alice envia a sua primeira mensagem, ela aplica um passo \textit{symmetric-key ratchet} à sua cadeia de chaves de envio, resultando numa nova chave para mensagens ( cada chave deste género possuirá um \textit{label} perante a mensagem que estas encriptam desencriptam). A nova chave da cadeia é guardada enquanto a chave para mensagem e a antiga chave de cadeia podem ser eliminadas.
+Quando a Alice envia a sua primeira mensagem, ela aplica um passo \textit{symmetric-key ratchet} à sua cadeia de chaves de envio, resultando numa nova chave para mensagens ( cada chave deste género possuirá um \textit{label} perante a mensagem que estas encriptam/ desencriptam). A nova chave da cadeia é guardada enquanto a chave para mensagem e a antiga chave de cadeia podem ser eliminadas.
 
 \begin{figure}[H]
 \begin{center}
 \includegraphics[width=12cm]{img/DR2.png}
-\caption{}
+\caption{Demonstração de um passo na symmetric-key ratchet após receção da primeira mensagem}
 \label{diagram:DR2} 
 \centering
 \end{center}
@@ -170,7 +230,7 @@ Se posteriormente a Alice receber uma mensagem vinda do Bob, esta irá conter um
 \begin{figure}[H]
 \begin{center}
 \includegraphics[width=12cm]{img/DR3.png}
-\caption{}
+\caption{Demonstração de um passo na symmetric-key ratchet após receção da segunda mensagem vinda do Bob levando à geração de uma chave de receção}
 \label{diagram:DR3} 
 \centering
 \end{center}
@@ -181,7 +241,7 @@ Suponhamos que a Alice envia uma mensagem A2, recebe uma mensagem B2 ( com a cha
 \begin{figure}[H]
 \begin{center}
 \includegraphics[width=12cm]{img/DR4.png}
-\caption{}
+\caption{Demonstração de alguns casos específicos do Double-Ratchet}
 \label{diagram:DR4} 
 \centering
 \end{center}
@@ -192,12 +252,59 @@ Se ,posteriormente, receber a mensagem B3 e B4 com a próxima chave \textit{rach
 \begin{figure}[H]
 \begin{center}
 \includegraphics[width=12cm]{img/DR5.png}
-\caption{}
+\caption{Estado final da cadeia}
 \label{diagram:DR5} 
 \centering
 \end{center}
 \end{figure}
 
+\subsection{Será o protocolo do Signal realmente seguro?}
+Perante tudo o que foi mencionado nos protocolos usados pelo Signal, rapidamente poderíamos considerar que sim, o Signal seria um protocolo bastante seguro. No entanto, sem qualquer acesso ao \textit{source-code}, não conseguimos validar realmente o quão solido e seguro é o Signal. Aqui entra uma das grandes razões para o \textbf{\textit{Signal}} ser o protocolo e aplicação mais segura de todas as existentes (sendo até usado por entidades politicas de grandes países \cite{politicsSignal}), pois o Signal é \textbf{\textit{Open-Source}}, permitindo que qualquer pessoa veja o código e detecte erros no mesmo, o que até aos dias de hoje ainda não aconteceu. O protocolo utilizado pelo Signal foi tão popular,seguro e tão bem recebido que ficou a ser um protocolo por si mesmo tendo sido este adaptado em 2018 por grandes empresas como \textbf{WhatsApp},\textbf{Facebook Messenger},\textbf{Skype} e \textbf{Google Allo}, apesar disso em alguns destes o protocolo Signal não se encontra activado por defeito.
+
+Excluindo o que foi mencionado em cima, o Signal ainda proporciona uma excelente documentação \cite{signal} onde explica detalhadamente todo o processo por detrás do seu protocolo o que permite que qualquer engenheiro valide o protocolo sem olhar para o código , podendo detectar lacunas antes de olhar para o \textit{source-code}.
+Por outro lado o Signal tem passado por varias auditorias sem qualquer registo de falhas a nível de segurança.
+
+Algumas auditorias e estudos feitos ao Signal:
+\begin{itemize}
+    \item 2014,Outubro, investigadores de \textit{Ruhr University Bochum} publicam uma análise do protocolo \textbf{validando a sua segurança} \cite{}.
+    \item 2016,Outubro, investigadores de \textit{University of Oxford,Queensland University of Technology and McMaster University} publicam uma analise formal do protocolo concluido que o protocolo era \textbf{criptograficamente seguro} \cite{}.
+    \item 2017,Julho, investigadores de \textit{Ruhr University Bochum} durante uma nova análise detectam uma falha puramente teórica, uma vez que esta ao acontecer seria automaticamente detectada, voltando a \textbf{validar a declaração anterior} \cite{}.
+\end{itemize}
+
 \subsection{O que torna o protocolo do Signal superior?}
-\textbf{FALAR DO QUE ESTA NA WIKEPEDIA NA PARTE DE ENCRYPTION PROTOCOLS }
-\textbf{ADICIONAR UM BCD DAS PRIMITIVAS USADAS PARA ENCRIPTACAO}
+Tendo sido adaptado pelas grandes empresas, como mencionado em cima, não se consideraria um protocolo pouco robusto mas ,para realçar uma das suas grandes vantagens é o facto de ser \textbf{\textit{Open-Source}} o que permite que uma grande comunidade de pessoas com gosto por \textit{\textbf{infosec}} possam ver o \textit{source-code} e detectar falhas sem ser por tentativa e erro através de uma interface (como mencionado anteriormente). Enquanto o Signal é \textit{Open-Source} e sabemos que a comunicação é realmente \textbf{\textit{end-to-end encrypted}} , e se duvidarmos podemos facilmente ver o \textit{source-code} e confirmar. 
+
+As outras ferramentas estão fechadas ao publico e não permitem acesso ao código desta forma, apenas podemos confiar que as entidades se estão a comportar e não estão a fazer nada de errado com os nossos dados. Em cima disto como falado em cima o Signal tem sofrido bastantes auditorias e estas não encontraram qualquer problema com a aplicação.
+
+Ao contrario do \textit{WhatApp}, o Signal não guarda dados (ou metadados que por vezes ainda são mais importantes) do cliente e se este quiser privacidade o Signal guarante-a enquanto o \textit{WhatsApp} ,sendo a aplicação mais utilizada , não o faz o que põe em causa a privacidade de milhões de usuários. O \textit{WhatsApp} apesar de usar o protocolo seguro e open-source do Signal pode ,\textit{behind the curtains}, estar a fazer algo mais que desconhecemos.O \textit{WhatsApp} efetua um \textit{load} de todos os nossos contactos do telemóvel para os seus servers remotos de forma a detectar quem tem ou não WhatsApp enquanto o Signal usa a tecnologia \textit{\textbf{SGX}} da Intel (regiões protegidas da memória). 
+
+Comparativamente ao \textit{Telegram} ,para além da distinção que o \textit{Telegram} não é \textit{open-source} e o Signal é , o Signal perante as analises feitas possui um algoritmo de segurança muito superior ao do Telegram.
+O Signal apaga \textbf{completamente},ênfase no completamente, as mensagens passado algum tempo, enquanto noutras apps, \textit{Telegram} inclusive, os records mantém-se guardados num servidor caso sejam apagadas.
+
+Além de tudo o referido anteriormente o Signal encontra-se activamente a procurar manter a privacidade dos seus clientes mesmo que sejam impostas regras pelos países onde estes vivem.
+
+\subsection{Domain Fronting e Signal App}
+Em grande parte a sociedade procura ter privacidade ,no entanto, no outro lado existem organizações ,muitas vezes politicas, que pretendem obter mais informação sobre a população ou dos cidadãos do seu pais. Desta forma , alguns paises como por exemplo o Egito (e.g Egito bloqueia todas as comunicações Signal \cite{noSignal}), bloqueiam o tráfego de aplicações como o Signal , consequentemente reduzindo a privacidade das pessoas.
+
+O Signal entrevem neste aspecto , mais uma vez procurando devolver a privacidade aos cidadãos, usando um mecanismo chamado \textbf{\textit{Domain Fronting}}. Este mecanismo ,como referido no artigo \cite{domainFrontingExplained}, funciona fazendo \textit{bypass} aos métodos de censura que bloqueiam através de \textit{DPI,DNS Filtering e IP Blocking} , sendo que estes dependem de grandes \textit{CDN's}. Desta forma o \textit{Domain Fronting} não passa de uma maneira de fazer o tráfico parecer que é gerado por um \textit{domain} válido, isto apenas é possível pela forma como as \textit{CDN's} modernas funcionam, tudo isto acontece na \textit{application layer da camada OSI (figura \ref{diagram:OSI})}. 
+Por exemplo, o \textbf{Domain A} e o \textbf{Domain B} pertencem ao mesmo \textit{CDN}, no entanto o \textbf{A} encontra-se bloqueado mas o \textbf{B} não. Assim a ideia principal do \textit{Domain Fronting} é criar um pacote com o \textbf{Domain B} no \textit{SNI Header} e o \textbf{Domain A} no \textit{HTTP Header}. Uma vez que o \textit{SNI} não é encriptado no \textit{TLS Protocol} este não sera bloqueado pelas autoridades, mas quando o pedido chega ao CDN e lê o HTTP Host Header com o \textit{Domain A} este será encaminha para o \textit{Domain A}(fig. \ref{diagram:domainFronting}).
+
+Como podemos ver o Signal tenta sempre possibilitar e manter a privacidade dos seus usuários ,no entanto este método deixa de funcionar se ,como mencionado no artigo do Signal \cite{signalDomainFronting},se bloquearem todos os sites de um \textit{CDN} especifico para se bloquear o site que se pretende censurar (e.g Tentativa da Russia a bloquear o \textit{Telegram} bloqueiam todo o tráfego de uma \textit{CDN} \cite{domainFrontingBlock} \cite{domainFrontingExplained} ). No final de contas o Signal perdeu ,nos paises em que foi censurado, pois as \textit{CDN's} bloquearam este tipo de comportamento (e.g Amazon Services bloqueia Signal \cite{signalDomainFronting}), mas deixou uma marca que demonstra que ,internamente,o seu protocolo visa e procura manter a privacidade das pessoas.
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[width=12cm,height=10cm]{img/OSI.png}
+\caption{Figura representativa das camadas OSI, dando enfase à camada aplicacional}
+\label{diagram:OSI}
+\centering
+\end{center}
+\end{figure}
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[width=15cm]{img/domainFronting.png}
+\caption{Funcionamento do Domain Fronting}
+\label{diagram:domainFronting}
+\centering
+\end{center}
+\end{figure}
