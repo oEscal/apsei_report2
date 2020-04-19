@@ -55,9 +55,11 @@
 \usepackage[nottoc,numbib]{tocbibind}
 \renewcommand{\refname}{Refências}
 
-% section on new page
-\usepackage{titlesec}
-\newcommand{\sectionbreak}{\clearpage}
+% section on new page, except the index one
+\usepackage{etoolbox}
+\pretocmd{\section}{%
+  \ifnum\value{section}=0 \else\clearpage\fi
+}{}{}
 
 \begin{document}
 
