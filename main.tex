@@ -35,7 +35,7 @@
 \renewcommand{\cftsecaftersnum}{.}
 \renewcommand{\cftsubsecaftersnum}{}
 \usepackage[letterspace=45]{microtype}
-\newcommand*{\fullref}[1]{\hyperref[{#1}]{\autoref*{#1} \nameref*{#1}}}
+\newcommand*{\fullref}[1]{\hyperref[{#1}]{\autoref*{#1} \nameref*{#1} \urlref*{#1}}}
 % Header with ua logo definition. 
 \pagestyle{fancy}
 \fancyhf{}
@@ -53,7 +53,6 @@
 
 % for the references
 \usepackage[nottoc,numbib]{tocbibind}
-\renewcommand{\refname}{Refências}
 
 % section on new page, except the index one
 \usepackage{etoolbox}

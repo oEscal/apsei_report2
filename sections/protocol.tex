@@ -85,7 +85,7 @@ O termo \emph{KDF Chain} é usado quando parte do \emph{output} de uma \emph{KDF
 Uma \emph{KDF Chain} apresenta as seguintes propriedades:
 
 \begin{itemize}
-    \item \textbf{Resiliência:} Se não houver conhecimento da chave KDF, as chaves de output aparentam ser \emph{random}. Isto mantem-se verdadeiro mesmo que o atacante controle parte dos \emph{inputs}
+    \item \textbf{Resiliência:} Se não houver conhecimento da chave KDF, as chaves de output aparentam ser \emph{random}. Isto mantém-se verdadeiro mesmo que o atacante controle parte dos \emph{inputs}
     \item \textbf{Forward Security:} Chaves de \textit{output} do passado aparentam ser \emph{random} para um atacante que conheceu uma chave KDF num momento futuro.
     \item \textbf{Break-in recovery:} Se os inputs futuros adicionarem entropia suficiente , as chaves \textit{output} do futuro aparentam ser \emph{random} para um atacante que conheceu uma chave KDF num momento qualquer
 \end{itemize}
@@ -273,9 +273,9 @@ Por outro lado o Signal tem passado por varias auditorias sem qualquer registo d
 
 Algumas auditorias e estudos feitos ao Signal:
 \begin{itemize}
-    \item 2014,Outubro, investigadores de \textit{Ruhr University Bochum} publicam uma análise do protocolo \textbf{validando a sua segurança} \cite{}.
-    \item 2016,Outubro, investigadores de \textit{University of Oxford,Queensland University of Technology and McMaster University} publicam uma analise formal do protocolo concluido que o protocolo era \textbf{criptograficamente seguro} \cite{}.
-    \item 2017,Julho, investigadores de \textit{Ruhr University Bochum} durante uma nova análise detectam uma falha puramente teórica, uma vez que esta ao acontecer seria automaticamente detectada, voltando a \textbf{validar a declaração anterior} \cite{}.
+    \item 2014,Outubro, investigadores de \textit{Ruhr University Bochum} publicam uma análise do protocolo \textbf{validando a sua segurança} \cite{frosch2016secure}.
+    \item 2016,Outubro, investigadores de \textit{University of Oxford,Queensland University of Technology and McMaster University} publicam uma analise formal do protocolo concluido que o protocolo era \textbf{criptograficamente seguro} \cite{cohn2017formal}.
+    \item 2017,Julho, investigadores de \textit{Ruhr University Bochum} durante uma nova análise detectam uma falha puramente teórica, uma vez que esta ao acontecer seria automaticamente detectada, voltando a \textbf{validar a declaração anterior} \cite{rosler2018more}.
 \end{itemize}
 
 \subsection{O que torna o protocolo do Signal superior?}
@@ -301,7 +301,7 @@ Como podemos ver o Signal tenta sempre possibilitar e manter a privacidade dos s
 \begin{figure}[H]
 \begin{center}
 \includegraphics[width=12cm,height=10cm]{img/OSI.png}
-\caption{Figura representativa das camadas OSI, dando enfase à camada aplicacional}
+\caption{Figura representativa das camadas OSI, dando ênfase à camada aplicacional \cite{OSI}.}
 \label{diagram:OSI}
 \centering
 \end{center}
@@ -310,7 +310,7 @@ Como podemos ver o Signal tenta sempre possibilitar e manter a privacidade dos s
 \begin{figure}[H]
 \begin{center}
 \includegraphics[width=15cm]{img/domainFronting.png}
-\caption{Funcionamento do Domain Fronting}
+\caption{Funcionamento do Domain Fronting \cite{df}.}
 \label{diagram:domainFronting}
 \centering
 \end{center}
