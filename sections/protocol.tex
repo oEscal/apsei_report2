@@ -73,9 +73,9 @@ Algumas das primitivas e algoritmos que o \textit{Signal} utiliza são:
 \end{itemize}
 
 \subsection{KDF chains}\label{sec:KDF}
-KDF Chains faz parte do \emph{core} de um dos principais métodos, \emph{Double Ratchet} (secção \ref{sec:DoubleRatchet}), necessários para manter o \textbf{\textit{Signal}} seguro.
-Este algoritmo recebe um \textbf{segredo} e uma \textbf{chave aleatória KDF} e dados de \emph{input} e retorna um \emph{output} indistinguível de um \emph{random}, isto se a chave não for conhecida.
-O termo \emph{KDF Chain} é usado quando parte do \emph{output} de uma \emph{KDF} é usado para substituir a \textbf{chave aleatória KDF}, podendo assim esta ser usada para outro \emph{input}. O diagrama \ref{diagram:kdfChain} representa o processo de 3 \emph{inputs} produzindo 3 novas \emph{output keys}.
+\textit{KDF Chains} faz parte do \emph{core} de um dos principais métodos, \emph{Double Ratchet} (secção \ref{sec:DoubleRatchet}), necessários para manter o \textbf{\textit{Signal}} seguro.
+Este algoritmo recebe um \textbf{segredo}, uma \textbf{chave aleatória \textit{KDF}} e dados de \emph{input} e retorna um \emph{output} indistinguível de um qualquer texto gerado aleatóriamente, isto se a chave não for conhecida.
+O termo \emph{KDF Chain} é usado quando parte do \emph{output} de uma \emph{KDF} é usado para substituir a \textbf{chave aleatória \textit{KDF}}, podendo assim esta ser usada para outro \emph{input}. O diagrama \ref{diagram:kdfChain} representa o processo de 3 \emph{inputs} produzirem 3 novas \emph{output keys}.
 
 
 \begin{figure}[H]
