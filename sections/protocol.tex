@@ -8,6 +8,7 @@ Algumas das primitivas e algoritmos que o \textit{Signal} utiliza são:
 \begin{itemize}
     \item \textbf{\textit{SHA-512}}
     \begin{itemize}
+        \item É uma função \textit{hash} criptográfica cuja operação mapeia dados de comprimento variável em dados de comprimento fixo, sendo os dados de comprimento fixo característicos do texto original e difíceis de reverter \footnote{difícil de encontrar duas mensagens com a mesma hash e difícil de  encontrar o texto original.}.
         \item Este algoritmo apresenta um número de combinações dado pela equação:
         \begin{equation}
             Combinacoes=2^{bits}=2^{512}=1.340781^{154}
@@ -33,7 +34,7 @@ Algumas das primitivas e algoritmos que o \textit{Signal} utiliza são:
     \begin{itemize}
         \item É um algoritmo de \textit{signing} que usa a hash \textit{SHA-512}. Este funciona da seguinte forma:
         \begin{itemize}
-            \item Sendo \textbf{k} uma chave privada Montgomery, \textbf{M} uma mensagem a ser assinada, \textbf{Z} uma sequência de 64 bytes aleatórios e seguros, \textbf{u} a chave publica Montgomery, \textbf{V||h||s} a assinatura a verificar(sequência de bytes em que \textbf{V} faz \textit{encode} de um ponto e \textbf{h} e \textbf{s} fazem \textit{encode} do \textit{integer modulo q(prime number)}, então temos os algoritmos dados pelo pseudocódigo em \ref{vxeddsa_sign} e \ref{vxeddsa_verify}:
+            \item Sendo \textbf{k} uma chave privada Montgomery, \textbf{M} uma mensagem a ser assinada, \textbf{Z} uma sequência de 64 bytes aleatórios e seguros, \textbf{u} a chave publica Montgomery, \textbf{V||h||s} a assinatura a verificar(sequência de bytes em que \textbf{V} faz \textit{encode} de um ponto e \textbf{h} e \textbf{s} fazem \textit{encode} do \textit{integer modulo q(prime number)}), então temos os algoritmos dados pelo pseudocódigo em \ref{vxeddsa_sign} e \ref{vxeddsa_verify}:
             
             \begin{lstlisting}[caption=Assinatura de um documento,captionpos=b, label={vxeddsa_sign}]
                 vxeddsa_sign(k, M, Z):
