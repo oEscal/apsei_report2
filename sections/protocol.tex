@@ -2,70 +2,74 @@
 Toda a informação presente foi obtida da documentação do \textit{Signal} \cite{signal}.
 
 \subsection{Primitivas}
-Sem contar com os algoritmos referidos nas subsecções abaixo, que são uma grande parte o que torna \textit{Signal} seguro, este também usa as primitivas, atualmente, mais seguras.
+Sem contar com os algoritmos referidos nas subsecções abaixo, que são uma grande parte do que torna o \textit{Signal} seguro, este também usa as primitivas, atualmente, mais seguras.
 
-\textbf{SHA-512} o que implica que existam , se o algoritmo \textit{random} for perfeito:
-\begin{equation}
-Combinacoes=2^{bits}=2^{512}=1.340781^{154}
-\end{equation}
-Isto implica que se alguém com um computador imaginemos a fazer $2^16$ cálculos em ~0.2s seria $327680$ por segundo:
-\begin{equation}
-Tempo = 1.340781^{154} / 327680 = 4.091739^{148}s = 4.735809^{143} dias = 1.297482^{141} anos
-\end{equation}
-Colocando isto em perspetiva a Terra tem $4,543\times10^9$ o que coloca a solução (para 1 computador) a demorar:
-\begin{equation}
-Tempo = 1.297482^{141} /4,543*10^{9} = 1.5740434^{18} ~= 1500    
-\end{equation}
+Algumas das primitivas e algoritmos que o \textit{Signal} utiliza são:
+\begin{itemize}
+    \item \textbf{\textit{SHA-512}}
+    \begin{itemize}
+        \item Este algoritmo apresenta um número de combinações dado pela equação:
+        \begin{equation}
+            Combinacoes=2^{bits}=2^{512}=1.340781^{154}
+        \end{equation}
 
-O que significa que seriam necessários 1500 vezes o tempo que a terra existe para poder decifrar uma \textit{hash} efetuada com \textbf{\textit{SHA-512}}
+        \item Isto implica que se alguém com um computador, imaginemos, a fazer $2^{16}$ cálculos em $\approx 0.2s$, isto é $327680$ cálculos por segundo, demoraria o seguinte intervalo de tempo a calcular todas essas combinações:
+        \begin{equation}
+            Tempo = 1.340781^{154} / 327680 = 4.091739^{148}s = 4.735809^{143} dias = 1.297482^{141} anos
+        \end{equation}
 
-\textbf{Curve25519} é uma curva elíptica que garante 128 bits de segurança com \textit{elliptic curve Diffie-hellman key agreement}. Este foi construído de forma a evitar potenciais \textit{pitfalls} e para ser imune a \textit{time attacks} (ataques com base na analise do tempo gasto para executar algoritmos criptográficos) 
+        \item Colocando isto em perspetiva, sendo que a Terra tem $4,543\times10^9$ anos, um típico computador demoraria $1500 "Terras"$ a obter o total de combinações necessárias, isto é, seria necessário $1500$ vezes o tempo que a Terra existe para poder decifrar uma \textit{hash} efetuada com este algoritmo:
+        \begin{equation}
+        Tempo = 1.297482^{141} /4,543*10^{9} = 1.5740434^{18} ~= 1500 Terras
+        \end{equation}
+    \end{itemize}
 
-\textbf{VXEdDSA} é um algoritmo de \textit{signing} que usa a hash \textit{SHA-5125}. Este funciona da seguinte forma,sendo \textbf{k} uma chave privada Montgomery,\textbf{M} uma mensagem a ser assinada,\textbf{Z} uma sequência de 64 bytes aleatórios e seguros,\textbf{u} a chave publica Montgomery,\textbf{V||h||s} a assinatura a verificar(sequência de bytes em que \textbf{V} faz \textit{encode} de um ponto e \textbf{h e s} fazem \textit{encode} do \textit{integer modulo q(prime number)}:
+    \item \textit{\textbf{Curve25519}}
+    \begin{itemize}
+        \item É uma curva elíptica que garante $128 bits$ de segurança, com \textit{elliptic curve Diffie-hellman key agreement}. Este foi construído de forma a evitar potenciais \textit{pitfalls} e para ser imune a \textit{time attacks} \footnote{ataques com base na análise do tempo gasto para executar algoritmos criptográficos.}.
+    \end{itemize}
 
-\begin{center}
-\begin{tabular}{c}
-\begin{lstlisting}[language=Python,caption=Assinatura de um documento,captionpos=b]
-vxeddsa_sign(k, M, Z):
-    A, a = calculate_key_pair(k)
-    Bv = hash_to_point(A || M)
-    V = aBv
-    r = hash3(a || V || Z) (mod q)
-    R = rB
-    Rv = rBv
-    h = hash4(A || V || R || Rv || M) (mod q)
-    s = r + ha (mod q)
-    v = hash5(cV) (mod 2b)
-    return (V || h || s), v
-\end{lstlisting}
-\end{tabular}
-\end{center}
-
-
-\begin{center}
-\begin{tabular}{c}
-\begin{lstlisting}[language=Python,caption=Validação de assinatura de um documento,captionpos=b]
-vxeddsa_verify(u, M, (V || h || s)):
-    if u >= p or V.y >= 2|p| or h >= 2|q| or s >= 2|q|:
-        return false
-    A = convert_mont(u)
-    Bv = hash_to_point(A || M)
-    if not on_curve(A) or not on_curve(V):
-        return false
-    if cA == I or cV == I or Bv == I:
-        return false
-    R = sB - hA
-    Rv = sBv - hV
-    hcheck = hash4(A || V || R || Rv || M) (mod q)
-    if bytes_equal(h, hcheck):
-        v = hash5(cV) (mod 2b)
-        return v
-    return false
-\end{lstlisting}
-\end{tabular}
-\end{center}
-
-Entre outras primitivas com objetivos idênticos.
+    \item \textit{\textbf{VXEdDSA}}
+    \begin{itemize}
+        \item É um algoritmo de \textit{signing} que usa a hash \textit{SHA-512}. Este funciona da seguinte forma:
+        \begin{itemize}
+            \item Sendo \textbf{k} uma chave privada Montgomery, \textbf{M} uma mensagem a ser assinada, \textbf{Z} uma sequência de 64 bytes aleatórios e seguros, \textbf{u} a chave publica Montgomery, \textbf{V||h||s} a assinatura a verificar(sequência de bytes em que \textbf{V} faz \textit{encode} de um ponto e \textbf{h} e \textbf{s} fazem \textit{encode} do \textit{integer modulo q(prime number)}, então temos os algoritmos dados pelo pseudocódigo em \ref{vxeddsa_sign} e \ref{vxeddsa_verify}:
+            
+            \begin{lstlisting}[caption=Assinatura de um documento,captionpos=b, label={vxeddsa_sign}]
+                vxeddsa_sign(k, M, Z):
+                    A, a = calculate_key_pair(k)
+                    Bv = hash_to_point(A || M)
+                    V = aBv
+                    r = hash3(a || V || Z) (mod q)
+                    R = rB
+                    Rv = rBv
+                    h = hash4(A || V || R || Rv || M) (mod q)
+                    s = r + ha (mod q)
+                    v = hash5(cV) (mod 2b)
+                    return (V || h || s), v
+                \end{lstlisting}
+            
+            \begin{lstlisting}[caption=Validação de assinatura de um documento,captionpos=b, label={vxeddsa_verify}]
+                vxeddsa_verify(u, M, (V || h || s)):
+                    if u >= p or V.y >= 2|p| or h >= 2|q| or s >= 2|q|:
+                        return false
+                    A = convert_mont(u)
+                    Bv = hash_to_point(A || M)
+                    if not on_curve(A) or not on_curve(V):
+                        return false
+                    if cA == I or cV == I or Bv == I:
+                        return false
+                    R = sB - hA
+                    Rv = sBv - hV
+                    hcheck = hash4(A || V || R || Rv || M) (mod q)
+                    if bytes_equal(h, hcheck):
+                        v = hash5(cV) (mod 2b)
+                        return v
+                    return false
+            \end{lstlisting}
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
 
 \subsection{KDF chains}\label{sec:KDF}
 KDF Chains faz parte do \emph{core} de um dos principais métodos, \emph{Double Ratchet} (secção \ref{sec:DoubleRatchet}), necessários para manter o \textbf{\textit{Signal}} seguro.
