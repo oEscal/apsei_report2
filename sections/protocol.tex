@@ -285,17 +285,17 @@ Algumas auditorias e estudos feitos ao \textit{Signal}:
 \subsection{Domain Fronting e \textit{Signal} App}
 No geral, a sociedade procura ter privacidade. No entanto, por outro lado, existem organizações, muitas vezes com interesses politicos, que pretendem obter mais informação sobre a população ou dos cidadãos do seu pais. Desta forma, alguns países, como por exemplo o Egito, bloqueiam o tráfego de aplicações como o \textit{Signal}, tendo isso como consequência a redução da privacidade das pessoas \cite{noSignal}.
 
-O \textit{Signal} tenta travar estas ações, mais uma vez procurando devolver a privacidade aos cidadãos, usando um mecanismo chamado \textbf{\textit{Domain Fronting}}. Este, como referido no artigo \cite{domainFrontingExplained}, funciona fazendo \textit{bypass} aos métodos de censura que o bloqueiam, através de \textit{DPI, DNS Filtering} e \textit{IP Blocking}, sendo que estes dependem de grandes \textit{CDN's}. Desta forma, o \textit{Domain Fronting} não passa de uma forma de fazer o tráfico parecer que é gerado por um \textit{domain} válido, isto é, não bloqueado no respetivo país. Isto apenas é possível pela forma como as \textit{CDN's} modernas funcionam, sendo que tudo acontece na \textit{application layer} da camada \textit{OSI} (figura \ref{diagram:OSI}). 
+O \textit{Signal} tenta travar estas ações, mais uma vez procurando devolver a privacidade aos cidadãos, usando um mecanismo chamado \textbf{\textit{Domain Fronting}}. Este, como referido no artigo \cite{domainFrontingExplained}, funciona fazendo \textit{bypass} aos métodos de censura que o bloqueiam, através de \textit{DPI, DNS Filtering} e \textit{IP Blocking}, sendo que estes dependem de grandes \textit{CDN's}. Desta forma, o \textit{Domain Fronting} não passa de uma forma de fazer o tráfico parecer que é gerado por um \textit{domain} válido, isto é, não bloqueado no respetivo país. Isto apenas é possível pela forma como as \textit{CDN's} modernas funcionam: possuem uma parte externa, que estabelece ligação com os clientes (\textit{Transport Layer}, onde a informação se encontra em \textit{clear text}) e uma parte interna, que é responsável por processar os pedidos e envia-los para o destino correspondente (\textit{Application Layer}, onde tudo se encontra encriptado) (figura \ref{diagram:OSI}).
 
 \begin{figure}[H]
     \begin{center}
         \includegraphics[width=12cm]{img/OSI.png}
-        \caption{Representação das camadas \textit{OSI}, dando-se ênfase à camada aplicacional \cite{OSI}.}
+        \caption{Representação das camadas \textit{OSI}, dando-se ênfase à camada aplicacional e de transporte \cite{OSI}.}
         \label{diagram:OSI}
     \end{center}
 \end{figure}
 
-Por exemplo, imaginemos que o \textbf{\textit{Domain A}} e o \textbf{\textit{Domain B}} pertencem ao mesmo \textit{CDN}. No entanto, o \textbf{A} encontra-se bloqueado mas o \textbf{B} não. Assim, a ideia principal do \textit{Domain Fronting} é criar um pacote com o \textbf{\textit{Domain B}} no \textit{SNI Header} e o \textbf{\textit{Domain A}} no \textit{HTTP Header}. Uma vez que o \textit{SNI} não é encriptado no \textit{TLS Protocol}, este não será bloqueado pelas autoridades, mas quando o pedido chega ao CDN e lê o \textit{HTTP Host Header} com o \textbf{\textit{Domain A}}, a mensagem será encaminha para o \textbf{\textit{Domain A}} (fig. \ref{diagram:domainFronting}).
+Por exemplo, imaginemos que o \textbf{\textit{Domain A}} e o \textbf{\textit{Domain B}} pertencem ao mesmo \textit{CDN}. No entanto, o \textbf{A} encontra-se bloqueado mas o \textbf{B} não. Assim, a ideia principal do \textit{Domain Fronting} é criar um pacote com o \textbf{\textit{Domain B}} no \textit{SNI Header} e o \textbf{\textit{Domain A}} no \textit{HTTP Header}. Uma vez que o \textit{SNI} não é encriptado no \textit{TLS Protocol} (\textit{Transport Layer}), este não será bloqueado pelas autoridades, mas quando o pedido chega ao CDN e lê o \textit{HTTP Host Header} (\textit{Application Layer}) com o \textbf{\textit{Domain A}}, a mensagem será encaminha para o \textbf{\textit{Domain A}} (fig. \ref{diagram:domainFronting}).
 
 \begin{figure}[H]
     \begin{center}
