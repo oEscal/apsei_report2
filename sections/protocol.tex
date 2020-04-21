@@ -283,27 +283,27 @@ Algumas auditorias e estudos feitos ao \textit{Signal}:
 
 
 \subsection{Domain Fronting e \textit{Signal} App}
-Em grande parte a sociedade procura ter privacidade ,no entanto, no outro lado existem organizações ,muitas vezes políticas, que pretendem obter mais informação sobre a população ou dos cidadãos do seu pais. Desta forma , alguns países como por exemplo o Egito (e.g Egito bloqueia todas as comunicações \textit{Signal} \cite{noSignal}), bloqueiam o tráfego de aplicações como o \textit{Signal} , consequentemente reduzindo a privacidade das pessoas.
+No geral, a sociedade procura ter privacidade. No entanto, por outro lado, existem organizações, muitas vezes com interesses politicos, que pretendem obter mais informação sobre a população ou dos cidadãos do seu pais. Desta forma, alguns países, como por exemplo o Egito, bloqueiam o tráfego de aplicações como o \textit{Signal}, tendo isso como consequência a redução da privacidade das pessoas \cite{noSignal}.
 
-O \textit{Signal} entrevem neste aspeto, mais uma vez procurando devolver a privacidade aos cidadãos, usando um mecanismo chamado \textbf{\textit{Domain Fronting}}. Este mecanismo ,como referido no artigo \cite{domainFrontingExplained}, funciona fazendo \textit{bypass} aos métodos de censura que bloqueiam através de \textit{DPI,DNS Filtering e IP Blocking} , sendo que estes dependem de grandes \textit{CDN's}. Desta forma o \textit{Domain Fronting} não passa de uma maneira de fazer o tráfico parecer que é gerado por um \textit{domain} válido, isto apenas é possível pela forma como as \textit{CDN's} modernas funcionam, tudo isto acontece na \textit{application layer da camada OSI (figura \ref{diagram:OSI})}. 
-Por exemplo, o \textbf{Domain A} e o \textbf{Domain B} pertencem ao mesmo \textit{CDN}, no entanto o \textbf{A} encontra-se bloqueado mas o \textbf{B} não. Assim a ideia principal do \textit{Domain Fronting} é criar um pacote com o \textbf{Domain B} no \textit{SNI Header} e o \textbf{Domain A} no \textit{HTTP Header}. Uma vez que o \textit{SNI} não é encriptado no \textit{TLS Protocol} este não sera bloqueado pelas autoridades, mas quando o pedido chega ao CDN e lê o HTTP Host Header com o \textit{Domain A} este será encaminha para o \textit{Domain A}(fig. \ref{diagram:domainFronting}).
-
-Como podemos ver o \textit{Signal} tenta sempre possibilitar e manter a privacidade dos seus usuários ,no entanto este método deixa de funcionar se ,como mencionado no artigo do \textit{Signal} \cite{signalDomainFronting},se bloquearem todos os sites de um \textit{CDN} especifico para se bloquear o site que se pretende censurar (e.g Tentativa da Russia a bloquear o \textit{Telegram} bloqueiam todo o tráfego de uma \textit{CDN} \cite{domainFrontingBlock} \cite{domainFrontingExplained} ). No final de contas o \textit{Signal} perdeu ,nos países em que foi censurado, pois as \textit{CDN's} bloquearam este tipo de comportamento (e.g Amazon Services bloqueia \textit{Signal} \cite{signalDomainFronting}), mas deixou uma marca que demonstra que ,internamente,o seu protocolo visa e procura manter a privacidade das pessoas.
+O \textit{Signal} tenta travar estas ações, mais uma vez procurando devolver a privacidade aos cidadãos, usando um mecanismo chamado \textbf{\textit{Domain Fronting}}. Este, como referido no artigo \cite{domainFrontingExplained}, funciona fazendo \textit{bypass} aos métodos de censura que o bloqueiam, através de \textit{DPI, DNS Filtering} e \textit{IP Blocking}, sendo que estes dependem de grandes \textit{CDN's}. Desta forma, o \textit{Domain Fronting} não passa de uma forma de fazer o tráfico parecer que é gerado por um \textit{domain} válido, isto é, não bloqueado no respetivo país. Isto apenas é possível pela forma como as \textit{CDN's} modernas funcionam, sendo que tudo acontece na \textit{application layer} da camada \textit{OSI} (figura \ref{diagram:OSI}). 
 
 \begin{figure}[H]
-\begin{center}
-\includegraphics[width=12cm,height=10cm]{img/OSI.png}
-\caption{Figura representativa das camadas OSI, dando ênfase à camada aplicacional \cite{OSI}.}
-\label{diagram:OSI}
-\centering
-\end{center}
+    \begin{center}
+        \includegraphics[width=12cm]{img/OSI.png}
+        \caption{Representação das camadas \textit{OSI}, dando-se ênfase à camada aplicacional \cite{OSI}.}
+        \label{diagram:OSI}
+    \end{center}
 \end{figure}
 
+Por exemplo, imaginemos que o \textbf{\textit{Domain A}} e o \textbf{\textit{Domain B}} pertencem ao mesmo \textit{CDN}. No entanto, o \textbf{A} encontra-se bloqueado mas o \textbf{B} não. Assim, a ideia principal do \textit{Domain Fronting} é criar um pacote com o \textbf{\textit{Domain B}} no \textit{SNI Header} e o \textbf{\textit{Domain A}} no \textit{HTTP Header}. Uma vez que o \textit{SNI} não é encriptado no \textit{TLS Protocol}, este não será bloqueado pelas autoridades, mas quando o pedido chega ao CDN e lê o \textit{HTTP Host Header} com o \textbf{\textit{Domain A}}, a mensagem será encaminha para o \textbf{\textit{Domain A}} (fig. \ref{diagram:domainFronting}).
+
 \begin{figure}[H]
-\begin{center}
-\includegraphics[width=15cm]{img/domainFronting.png}
-\caption{Funcionamento do Domain Fronting \cite{df}.}
-\label{diagram:domainFronting}
-\centering
-\end{center}
+    \begin{center}
+        \includegraphics[width=15cm]{img/domainFronting.png}
+        \caption{Funcionamento do Domain Fronting \cite{df}.}
+        \label{diagram:domainFronting}
+    \end{center}
 \end{figure}
+
+
+Como podemos perceber, o \textit{Signal} tenta sempre possibilitar e manter a privacidade dos seus usuários. No entanto, este método deixa de funcionar se, como mencionado no artigo do \textit{Signal} \cite{signalDomainFronting}, forem bloqueados todos os sites de um \textit{CDN} especifico para se bloquear o site que se pretende censurar (por exemplo, houve uma tentativa da Russia a bloquear o \textit{Telegram}, bloqueando todo o tráfego de uma \textit{CDN} \cite{domainFrontingExplained, domainFrontingBlock}). No final de contas, o \textit{Signal} perdeu o seu alcance nos países em que foi censurado, pois as \textit{CDN's} usadas bloquearam este tipo de comportamento (e.g Amazon Services bloqueia \textit{Signal} \cite{signalDomainFronting}), mas deixou uma marca que demonstra que, internamente, o seu protocolo visa e procura manter a privacidade das pessoas. Esta questão será melhor analisada na secção dos problemas associados a este serviço.
